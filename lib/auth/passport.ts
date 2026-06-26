@@ -21,9 +21,18 @@ export type VisitorId = z.infer<typeof visitorIdSchema>;
 
 export interface VisitorIdentity {
   readonly authenticator: "development" | "vercel-passport";
+  readonly connectorId?: string;
   readonly email?: string;
   readonly id: VisitorId;
   readonly name?: string;
+}
+
+export interface VisitorProfile {
+  readonly authenticator: VisitorIdentity["authenticator"];
+  readonly connectorId?: string;
+  readonly displayName: string;
+  readonly email?: string;
+  readonly externalSubject: string;
 }
 
 export function readPassportIdentity(
@@ -38,6 +47,7 @@ export function readPassportIdentity(
 
     return {
       authenticator: "vercel-passport",
+      connectorId: optionalString(claims.data.connector_id, 512),
       email: optionalString(claims.data.email, 320),
       id: claims.data.external_sub,
       name: optionalString(claims.data.name, 200),
@@ -76,6 +86,16 @@ export function readVercelPassportIdentity(
 
 export function visitorDisplayName(identity: VisitorIdentity): string {
   return identity.name ?? identity.email ?? "Authenticated visitor";
+}
+
+export function visitorProfile(identity: VisitorIdentity): VisitorProfile {
+  return {
+    authenticator: identity.authenticator,
+    ...(identity.connectorId ? { connectorId: identity.connectorId } : {}),
+    displayName: visitorDisplayName(identity),
+    ...(identity.email ? { email: identity.email } : {}),
+    externalSubject: identity.id,
+  };
 }
 
 function developmentIdentity(

@@ -14,6 +14,7 @@ vi.mock("evlog/next/client", () => ({
 }));
 
 import { AgentChatSession } from "./agent-chat";
+import type { VisitorProfile } from "@/lib/auth/passport";
 
 const MODEL = "zai/glm-5.2";
 
@@ -36,13 +37,21 @@ const historyProps = {
   onSelectChat: vi.fn(async () => undefined),
 } as const;
 
+const visitor = {
+  authenticator: "vercel-passport",
+  connectorId: "scl_j1QUojH9qGLINIdBiQUvEw",
+  displayName: "Remi Connesson",
+  email: "remi@example.com",
+  externalSubject: "00u14j2nwsisc9QmZ698",
+} satisfies VisitorProfile;
+
 function renderChat(stopButtonEnabled = false) {
   return renderToStaticMarkup(
     <AgentChatSession
       {...historyProps}
       model={MODEL}
       stopButtonEnabled={stopButtonEnabled}
-      visitorName="Remi Connesson"
+      visitor={visitor}
     />,
   );
 }
@@ -144,7 +153,13 @@ describe("AgentChat input requests", () => {
     const html = renderChat();
 
     expect(html).toContain("Passport workspace");
+    expect(html).toContain("Signed in as");
     expect(html).toContain("Remi Connesson");
+    expect(html).toContain("remi@example.com");
+    expect(html).toContain("External subject");
+    expect(html).toContain("00u14j2nwsisc9QmZ698");
+    expect(html).toContain("Passport connector");
+    expect(html).toContain("scl_j1QUojH9qGLINIdBiQUvEw");
   });
 
   it("hides the stop action while the feature flag is disabled", () => {

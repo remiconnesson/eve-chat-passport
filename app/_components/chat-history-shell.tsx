@@ -2,6 +2,7 @@
 
 import { log as clientLog } from "evlog/next/client";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import type { VisitorProfile } from "@/lib/auth/passport";
 import { createChatPersistenceQueue } from "@/lib/chat-history/persistence-queue";
 import { createRemoteChatHistoryStore } from "@/lib/chat-history/remote";
 import {
@@ -30,12 +31,12 @@ export function AgentChat({
   historyStore = remoteHistoryStore,
   model,
   stopButtonEnabled,
-  visitorName,
+  visitor,
 }: {
   readonly historyStore?: ChatHistoryStore;
   readonly model: string;
   readonly stopButtonEnabled: boolean;
-  readonly visitorName: string;
+  readonly visitor: VisitorProfile;
 }) {
   const [history, setHistory] = useState<HistoryState>({ kind: "loading" });
 
@@ -183,7 +184,7 @@ export function AgentChat({
       onRemoveChat={removeChat}
       onSelectChat={selectChat}
       stopButtonEnabled={stopButtonEnabled}
-      visitorName={visitorName}
+      visitor={visitor}
     />
   );
 }

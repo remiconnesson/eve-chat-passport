@@ -5,8 +5,11 @@ import { useEveAgent } from "eve/react";
 import { log as clientLog } from "evlog/next/client";
 import {
   AlertCircleIcon,
+  FingerprintIcon,
+  KeyRoundIcon,
   ShieldCheckIcon,
   TerminalIcon,
+  type LucideIcon,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -22,6 +25,7 @@ import {
 } from "@/components/ai-elements/prompt-input";
 import { PromptInputStop } from "@/components/ai-elements/prompt-input-stop";
 import { Button } from "@/components/ui/button";
+import type { VisitorProfile } from "@/lib/auth/passport";
 import type {
   ChatHistoryRecord,
   ChatHistorySummary,
@@ -57,7 +61,7 @@ export function AgentChatSession({
   onRemoveChat,
   onSelectChat,
   stopButtonEnabled,
-  visitorName,
+  visitor,
 }: {
   readonly chat: ChatHistoryRecord;
   readonly chats: readonly ChatHistorySummary[];
@@ -68,7 +72,7 @@ export function AgentChatSession({
   readonly onRemoveChat: (id: string) => Promise<void>;
   readonly onSelectChat: (id: string) => Promise<void>;
   readonly stopButtonEnabled: boolean;
-  readonly visitorName: string;
+  readonly visitor: VisitorProfile;
 }) {
   const titleRef = useRef(chat.title);
   const persistedCursorRef = useRef(`${chat.events.length}:${chat.session.streamIndex}`);
@@ -284,7 +288,7 @@ export function AgentChatSession({
                 <span className="truncate font-semibold tracking-[-0.01em]">
                   eve
                 </span>
-                <span aria-hidden="true" className="text-gray-600">
+                <span aria-hidden="true" className="hidden text-gray-600 sm:inline">
                   /
                 </span>
                 <span className="hidden truncate text-gray-900 sm:inline">
@@ -305,18 +309,10 @@ export function AgentChatSession({
                 {model}
               </span>
               <StatusIndicator status={agent.status} />
-              <span
-                className="hidden max-w-40 items-center gap-2 text-xs text-gray-900 lg:flex"
-                title={visitorName}
-              >
-                <ShieldCheckIcon
-                  aria-hidden="true"
-                  className="size-3.5 shrink-0"
-                />
-                <span className="truncate">{visitorName}</span>
-              </span>
             </div>
           </header>
+
+          <VisitorIdentityStrip visitor={visitor} />
 
           {agent.error ? (
           <div className="shrink-0 border-b border-red-400 bg-red-100 px-4 py-3 sm:px-6">
@@ -380,6 +376,89 @@ export function AgentChatSession({
         </section>
       </div>
     </main>
+  );
+}
+
+function VisitorIdentityStrip({ visitor }: { readonly visitor: VisitorProfile }) {
+  const connector =
+    visitor.connectorId ??
+    (visitor.authenticator === "development"
+      ? "Local development"
+      : "Not provided");
+  const email =
+    visitor.email && visitor.email !== visitor.displayName
+      ? visitor.email
+      : undefined;
+
+  return (
+    <section
+      aria-label="Authenticated visitor details"
+      className="grid shrink-0 grid-cols-2 border-b border-white/15 bg-[#171717] text-white md:grid-cols-3"
+    >
+      <IdentityFact
+        className="col-span-2 border-b border-white/15 md:col-span-1 md:border-r md:border-b-0"
+        icon={FingerprintIcon}
+        label="Signed in as"
+        secondary={email}
+        value={visitor.displayName}
+      />
+      <IdentityFact
+        className="border-r border-white/15"
+        icon={KeyRoundIcon}
+        label="External subject"
+        monospace
+        value={visitor.externalSubject}
+      />
+      <IdentityFact
+        icon={ShieldCheckIcon}
+        label="Passport connector"
+        monospace
+        value={connector}
+      />
+    </section>
+  );
+}
+
+function IdentityFact({
+  className,
+  icon: Icon,
+  label,
+  monospace = false,
+  secondary,
+  value,
+}: {
+  readonly className?: string;
+  readonly icon: LucideIcon;
+  readonly label: string;
+  readonly monospace?: boolean;
+  readonly secondary?: string;
+  readonly value: string;
+}) {
+  return (
+    <div className={cn("flex min-w-0 items-center gap-4 p-4", className)}>
+      <span className="grid size-8 shrink-0 place-items-center border border-white/15 bg-white/5">
+        <Icon aria-hidden="true" className="size-4 text-[#7ce38b]" />
+      </span>
+      <div className="min-w-0">
+        <p className="text-[10px] font-medium text-white/60 uppercase">{label}</p>
+        <p
+          className={cn(
+            "mt-2 text-sm font-medium",
+            monospace
+              ? "break-all font-mono text-xs leading-4"
+              : "truncate",
+          )}
+          title={value}
+        >
+          {value}
+        </p>
+        {secondary ? (
+          <p className="mt-2 truncate text-xs text-white/60" title={secondary}>
+            {secondary}
+          </p>
+        ) : null}
+      </div>
+    </div>
   );
 }
 

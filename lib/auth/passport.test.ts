@@ -6,6 +6,7 @@ import {
   readPassportIdentity,
   readRequestIdentity,
   visitorDisplayName,
+  visitorProfile,
 } from "./passport";
 
 async function passportToken(
@@ -15,6 +16,7 @@ async function passportToken(
     email: "remi@example.com",
     external_sub: "00u14j2nwsisc9QmZ698",
     name: "Remi Connesson",
+    connector_id: "scl_j1QUojH9qGLINIdBiQUvEw",
     ...claims,
   })
     .setProtectedHeader({ alg: "HS256" })
@@ -30,6 +32,7 @@ describe("Passport identity", () => {
 
     expect(readPassportIdentity(headers)).toEqual({
       authenticator: "vercel-passport",
+      connectorId: "scl_j1QUojH9qGLINIdBiQUvEw",
       email: "remi@example.com",
       id: "00u14j2nwsisc9QmZ698",
       name: "Remi Connesson",
@@ -74,6 +77,13 @@ describe("Passport identity", () => {
     );
 
     expect(identity && visitorDisplayName(identity)).toBe("remi@example.com");
+    expect(identity && visitorProfile(identity)).toEqual({
+      authenticator: "vercel-passport",
+      connectorId: "scl_j1QUojH9qGLINIdBiQUvEw",
+      displayName: "remi@example.com",
+      email: "remi@example.com",
+      externalSubject: "00u14j2nwsisc9QmZ698",
+    });
   });
 
   it("ignores malformed optional profile claims", async () => {

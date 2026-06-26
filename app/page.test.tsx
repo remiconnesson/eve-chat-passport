@@ -19,6 +19,8 @@ describe("Page", () => {
   beforeEach(() => {
     mocks.currentPageVisitor.mockResolvedValue({
       authenticator: "vercel-passport",
+      connectorId: "scl_j1QUojH9qGLINIdBiQUvEw",
+      email: "remi@example.com",
       id: "visitor-id",
       name: "Remi Connesson",
     });
@@ -30,7 +32,12 @@ describe("Page", () => {
       !isValidElement<{
         readonly model: string;
         readonly stopButtonEnabled: boolean;
-        readonly visitorName: string;
+        readonly visitor: {
+          readonly connectorId?: string;
+          readonly displayName: string;
+          readonly email?: string;
+          readonly externalSubject: string;
+        };
       }>(page)
     ) {
       throw new TypeError("Expected Page to return a React element.");
@@ -38,7 +45,12 @@ describe("Page", () => {
 
     expect(page.props.model).toBe(agent.model);
     expect(page.props.stopButtonEnabled).toBe(false);
-    expect(page.props.visitorName).toBe("Remi Connesson");
+    expect(page.props.visitor).toMatchObject({
+      connectorId: "scl_j1QUojH9qGLINIdBiQUvEw",
+      displayName: "Remi Connesson",
+      email: "remi@example.com",
+      externalSubject: "visitor-id",
+    });
   });
 
   it("enables the stop button from the server-side feature flag", async () => {
