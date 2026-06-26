@@ -30,8 +30,8 @@ importers:
         specifier: ^2.4.1
         version: 2.4.1
       ai:
-        specifier: 7.0.0-beta.178
-        version: 7.0.0-beta.178(zod@4.4.3)
+        specifier: 7.0.2
+        version: 7.0.2(zod@4.4.3)
       class-variance-authority:
         specifier: 0.7.1
         version: 0.7.1
@@ -39,11 +39,11 @@ importers:
         specifier: 2.1.1
         version: 2.1.1
       eve:
-        specifier: ^0.11.2
-        version: 0.11.7(@vercel/blob@2.4.1)(ai@7.0.0-beta.178(zod@4.4.3))(jiti@2.7.0)(just-bash@3.0.1)(microsandbox@0.5.7)(next@16.2.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react@19.2.6)(vite@8.0.16(@types/node@24.13.2)(jiti@2.7.0)(yaml@2.9.0))
+        specifier: ^0.15.2
+        version: 0.15.2(@vercel/blob@2.4.1)(ai@7.0.2(zod@4.4.3))(jiti@2.7.0)(just-bash@3.0.1)(microsandbox@0.5.7)(next@16.2.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react@19.2.6)(vite@8.0.16(@types/node@24.13.2)(jiti@2.7.0)(yaml@2.9.0))
       evlog:
         specifier: ^2.19.1
-        version: 2.19.1(ai@7.0.0-beta.178(zod@4.4.3))(next@16.2.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(ofetch@1.5.1)(react@19.2.6)(vite@8.0.16(@types/node@24.13.2)(jiti@2.7.0)(yaml@2.9.0))
+        version: 2.19.1(ai@7.0.2(zod@4.4.3))(next@16.2.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(ofetch@1.5.1)(react@19.2.6)(vite@8.0.16(@types/node@24.13.2)(jiti@2.7.0)(yaml@2.9.0))
       jose:
         specifier: ^6.2.3
         version: 6.2.3
@@ -114,20 +114,20 @@ importers:
 
 packages:
 
-  '@ai-sdk/gateway@4.0.0-beta.109':
-    resolution: {integrity: sha512-W/1kLlPb6Bgbhwep3CA3R6do0HD7SXV5gyuz2XBLY1YABqgxYkw+IhEcjOYlmn9v+Tifjqy5yJqmWdSHMJhyPQ==}
+  '@ai-sdk/gateway@4.0.2':
+    resolution: {integrity: sha512-Jz1BiiTSvhDsCBJrkFRSqLHDRMVjFtYk9GdbSi3UOqY+/epza+oIESMDzfN4m+YHT/1IYmNEmxaMfjXOvxKDjQ==}
     engines: {node: '>=22'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
 
-  '@ai-sdk/provider-utils@5.0.0-beta.49':
-    resolution: {integrity: sha512-7xnpAQLpW0KGIsh0CQERcIZuXEGqv7FtFW2BdFk14iuMxRMVpXhTVvEQyqkm6tWAbQ7OsGQJhO6M0Me9gHQ52g==}
+  '@ai-sdk/provider-utils@5.0.0':
+    resolution: {integrity: sha512-zj66M02jc6ASYwIgWZowsooDUwaVngeNZQ3H10GwcPMZ+KR6gHMhcUuKl6tkai+JPXTKDyHY1pnszuxRtw2D4A==}
     engines: {node: '>=22'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
 
-  '@ai-sdk/provider@4.0.0-beta.19':
-    resolution: {integrity: sha512-Aca/KiGeRtMM7rOJ38Qio+Dc2V45PpiGoWgdrdtIkgM9zkhYpS043t0ggKoNOWgm/csv99XWGrfSF63PSkVeHw==}
+  '@ai-sdk/provider@4.0.0':
+    resolution: {integrity: sha512-fr9Gs89prDWiuox/T+kCA+i2cJkHpxU5S+tr4megjTzRC27ZsvFhwjU/+XrqqMbvBUlfmXxTOYWy8ng45dsjIg==}
     engines: {node: '>=22'}
 
   '@alloc/quick-lru@5.2.0':
@@ -1779,8 +1779,8 @@ packages:
   '@workflow/serde@4.1.0':
     resolution: {integrity: sha512-pav4F2BoirECWR7Nf1TKt+2eETcBj7jj4cBefQ8VXQCA6NPkaKeLfj/zMgi+3zYV5ZIBT4GuUiphsj0/b9hPQQ==}
 
-  ai@7.0.0-beta.178:
-    resolution: {integrity: sha512-kOfIbf23FDkvvfDHOS1gIjImBF9MlYut8fEMlps57vvS622VKL1PeEDLJ181aVd2LPSiDr3SupAMSzI2rEaW3w==}
+  ai@7.0.2:
+    resolution: {integrity: sha512-VMU08jHIDJnnKDrbC9AFa5ZsPpOTfAPRLvTRHtJk4FGAoeldmJROMxvZ2ak5lCjEJ2GP2OLPQbMRyEK8w0+S4A==}
     engines: {node: '>=22'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
@@ -2176,14 +2176,14 @@ packages:
   estree-walker@3.0.3:
     resolution: {integrity: sha512-7RUKfXgSMMkzt6ZuXmqapOurLGPPfgj6l9uRZ7lRGolvk0y2yocc35LdcxKC5PQZdn2DMqioAQ2NoWcrTKmm6g==}
 
-  eve@0.11.7:
-    resolution: {integrity: sha512-Nwc4dt0Q6vwb0B8eVHjbTvpkYAng8A/cbJwcyFra5agdwiPw2Rl7HlBoilVceSBqdkOuOPFXB+EdyJHdrgylZQ==}
+  eve@0.15.2:
+    resolution: {integrity: sha512-YU+RumTW8WkzEuITilNH0GQL9i5DfcwMM0zrJjZ4X80RQAcgo/TmgHigdIA8Kp2cFLow06ReRKwqm9eRb2BB8g==}
     engines: {node: '>=24'}
     hasBin: true
     peerDependencies:
       '@opentelemetry/api': ^1.0.0
       '@sveltejs/kit': ^2.0.0
-      ai: 7.0.0-beta.178
+      ai: ^7.0.0
       braintrust: ^3.0.0
       just-bash: ^3.0.0
       microsandbox: ^0.5.0
@@ -3671,22 +3671,22 @@ packages:
 
 snapshots:
 
-  '@ai-sdk/gateway@4.0.0-beta.109(zod@4.4.3)':
+  '@ai-sdk/gateway@4.0.2(zod@4.4.3)':
     dependencies:
-      '@ai-sdk/provider': 4.0.0-beta.19
-      '@ai-sdk/provider-utils': 5.0.0-beta.49(zod@4.4.3)
+      '@ai-sdk/provider': 4.0.0
+      '@ai-sdk/provider-utils': 5.0.0(zod@4.4.3)
       '@vercel/oidc': 3.2.0
       zod: 4.4.3
 
-  '@ai-sdk/provider-utils@5.0.0-beta.49(zod@4.4.3)':
+  '@ai-sdk/provider-utils@5.0.0(zod@4.4.3)':
     dependencies:
-      '@ai-sdk/provider': 4.0.0-beta.19
+      '@ai-sdk/provider': 4.0.0
       '@standard-schema/spec': 1.1.0
       '@workflow/serde': 4.1.0
       eventsource-parser: 3.1.0
       zod: 4.4.3
 
-  '@ai-sdk/provider@4.0.0-beta.19':
+  '@ai-sdk/provider@4.0.0':
     dependencies:
       json-schema: 0.4.0
 
@@ -5279,11 +5279,11 @@ snapshots:
 
   '@workflow/serde@4.1.0': {}
 
-  ai@7.0.0-beta.178(zod@4.4.3):
+  ai@7.0.2(zod@4.4.3):
     dependencies:
-      '@ai-sdk/gateway': 4.0.0-beta.109(zod@4.4.3)
-      '@ai-sdk/provider': 4.0.0-beta.19
-      '@ai-sdk/provider-utils': 5.0.0-beta.49(zod@4.4.3)
+      '@ai-sdk/gateway': 4.0.2(zod@4.4.3)
+      '@ai-sdk/provider': 4.0.0
+      '@ai-sdk/provider-utils': 5.0.0(zod@4.4.3)
       zod: 4.4.3
 
   anynum@1.0.1: {}
@@ -5638,9 +5638,9 @@ snapshots:
     dependencies:
       '@types/estree': 1.0.9
 
-  eve@0.11.7(@vercel/blob@2.4.1)(ai@7.0.0-beta.178(zod@4.4.3))(jiti@2.7.0)(just-bash@3.0.1)(microsandbox@0.5.7)(next@16.2.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react@19.2.6)(vite@8.0.16(@types/node@24.13.2)(jiti@2.7.0)(yaml@2.9.0)):
+  eve@0.15.2(@vercel/blob@2.4.1)(ai@7.0.2(zod@4.4.3))(jiti@2.7.0)(just-bash@3.0.1)(microsandbox@0.5.7)(next@16.2.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react@19.2.6)(vite@8.0.16(@types/node@24.13.2)(jiti@2.7.0)(yaml@2.9.0)):
     dependencies:
-      ai: 7.0.0-beta.178(zod@4.4.3)
+      ai: 7.0.2(zod@4.4.3)
       nitro: 3.0.260610-beta(@vercel/blob@2.4.1)(jiti@2.7.0)(vite@8.0.16(@types/node@24.13.2)(jiti@2.7.0)(yaml@2.9.0))
     optionalDependencies:
       just-bash: 3.0.1
@@ -5689,9 +5689,9 @@ snapshots:
 
   eventsource-parser@3.1.0: {}
 
-  evlog@2.19.1(ai@7.0.0-beta.178(zod@4.4.3))(next@16.2.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(ofetch@1.5.1)(react@19.2.6)(vite@8.0.16(@types/node@24.13.2)(jiti@2.7.0)(yaml@2.9.0)):
+  evlog@2.19.1(ai@7.0.2(zod@4.4.3))(next@16.2.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(ofetch@1.5.1)(react@19.2.6)(vite@8.0.16(@types/node@24.13.2)(jiti@2.7.0)(yaml@2.9.0)):
     optionalDependencies:
-      ai: 7.0.0-beta.178(zod@4.4.3)
+      ai: 7.0.2(zod@4.4.3)
       next: 16.2.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       ofetch: 1.5.1
       react: 19.2.6
