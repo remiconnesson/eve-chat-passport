@@ -10,7 +10,7 @@ describe("diagnostic log fields", () => {
     expect(toDiagnosticLogFields(diagnostics.EVE_R001())).toEqual({
       code: "EVE_R001",
       docs:
-        "https://github.com/remiconnesson/eve-single-user-agent-starter/blob/main/docs/diagnostics/eve_r001.md",
+        "https://github.com/remiconnesson/eve-chat-passport/blob/main/docs/diagnostics/eve_r001.md",
       fix: "Retry the request once. If it fails again, inspect Vercel logs for this code and request ID.",
       why: "The agent could not complete the request.",
     });

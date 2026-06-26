@@ -34,7 +34,7 @@ export default defineHook({
           count: current.length,
         },
         outcome: "completed",
-        service: "eve-single-user-agent-starter:agent",
+        service: "eve-chat-passport:agent",
         session: { id: context.session.id },
         turn: { id: context.session.turn.id },
       });

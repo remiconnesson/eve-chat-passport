@@ -25,10 +25,7 @@ export function toChatHistorySummary(
   };
 }
 
-/**
- * Persistence boundary for chat history. Browser storage and a future Neon
- * implementation share this contract, so the chat UI does not depend on either.
- */
+/** Persistence boundary so the chat UI stays independent of its backing store. */
 export interface ChatHistoryStore {
   get(id: string): Promise<ChatHistoryRecord | null>;
   list(): Promise<readonly ChatHistorySummary[]>;

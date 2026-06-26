@@ -42,6 +42,7 @@ function renderChat(stopButtonEnabled = false) {
       {...historyProps}
       model={MODEL}
       stopButtonEnabled={stopButtonEnabled}
+      visitorName="Remi Connesson"
     />,
   );
 }
@@ -139,12 +140,11 @@ describe("AgentChat input requests", () => {
     expect(html).not.toContain("support report");
   });
 
-  it("renders the sign-out action", () => {
+  it("shows the Passport-authenticated visitor", () => {
     const html = renderChat();
 
-    expect(html).toMatch(
-      /<form action="\/api\/auth\/logout" method="post">.*Sign Out<\/button>/,
-    );
+    expect(html).toContain("Passport workspace");
+    expect(html).toContain("Remi Connesson");
   });
 
   it("hides the stop action while the feature flag is disabled", () => {
@@ -192,12 +192,12 @@ describe("AgentChat input requests", () => {
     );
   });
 
-  it("renders browser history and a new-chat action", () => {
+  it("renders synced history and a new-chat action", () => {
     const html = renderChat();
 
     expect(html).toContain("Current chat");
     expect(html).toContain("New Chat");
-    expect(html).toContain("Saved in this browser");
+    expect(html).toContain("Synced to private Vercel Blob");
   });
 
   it("exposes mobile history as a dialog trigger", () => {

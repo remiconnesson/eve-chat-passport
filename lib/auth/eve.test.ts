@@ -1,70 +1,71 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { createSessionToken, parseAccessPassword, SESSION_COOKIE_NAME } from "./session";
-import { singleUserPasswordAuth } from "./eve";
+import { SignJWT } from "jose";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { PASSPORT_HEADER } from "./passport";
+import { passportAuth } from "./eve";
 
-const ACCESS_PASSWORD = "correct horse battery staple";
+async function passportToken(): Promise<string> {
+  return new SignJWT({
+    email: "remi@example.com",
+    external_sub: "00u14j2nwsisc9QmZ698",
+    name: "Remi Connesson",
+  })
+    .setProtectedHeader({ alg: "HS256" })
+    .sign(new TextEncoder().encode("test-only-passport-signing-key"));
+}
 
-afterEach(() => {
-  vi.unstubAllEnvs();
-});
-
-describe("singleUserPasswordAuth", () => {
-  it("maps Vercel Preview requests to the owner without a cookie", async () => {
-    vi.stubEnv("EVE_ACCESS_PASSWORD", "");
-    vi.stubEnv("VERCEL_ENV", "preview");
-    const authenticate = singleUserPasswordAuth();
-
-    const result = await authenticate(
-      new Request("https://eve.example/eve/v1/session"),
-    );
-
-    expect(result).toEqual({
-      attributes: {},
-      authenticator: "preview",
-      principalId: "owner",
-      principalType: "user",
-    });
+describe("passportAuth", () => {
+  beforeEach(() => {
+    vi.stubEnv("VERCEL", "1");
   });
 
-  it("maps a valid cookie to the single owner principal", async () => {
-    vi.stubEnv("EVE_ACCESS_PASSWORD", ACCESS_PASSWORD);
-    const token = await createSessionToken({
-      password: parseAccessPassword(ACCESS_PASSWORD),
-    });
-    const authenticate = singleUserPasswordAuth();
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("maps the Passport subject to an eve user principal", async () => {
+    const authenticate = passportAuth();
     const result = await authenticate(
       new Request("https://eve.example/eve/v1/session", {
-        headers: { cookie: `${SESSION_COOKIE_NAME}=${token}` },
+        headers: { [PASSPORT_HEADER]: await passportToken() },
       }),
     );
 
     expect(result).toEqual({
-      attributes: {},
-      authenticator: "password",
-      principalId: "owner",
+      attributes: {
+        email: "remi@example.com",
+        name: "Remi Connesson",
+      },
+      authenticator: "vercel-passport",
+      principalId: "00u14j2nwsisc9QmZ698",
       principalType: "user",
     });
   });
 
-  it("skips requests with an invalid cookie", async () => {
-    vi.stubEnv("EVE_ACCESS_PASSWORD", ACCESS_PASSWORD);
-    const authenticate = singleUserPasswordAuth();
+  it("skips requests without a valid Passport identity", async () => {
+    const authenticate = passportAuth();
 
+    await expect(
+      authenticate(new Request("https://eve.example/eve/v1/session")),
+    ).resolves.toBeNull();
     await expect(
       authenticate(
         new Request("https://eve.example/eve/v1/session", {
-          headers: { cookie: `${SESSION_COOKIE_NAME}=invalid` },
+          headers: { [PASSPORT_HEADER]: "not-a-jwt" },
         }),
       ),
     ).resolves.toBeNull();
   });
 
-  it("skips production requests when the password is not configured", async () => {
-    vi.stubEnv("EVE_ACCESS_PASSWORD", "");
-    const authenticate = singleUserPasswordAuth();
+  it("does not trust a caller-supplied Passport header off Vercel", async () => {
+    vi.stubEnv("VERCEL", "");
+    const authenticate = passportAuth();
 
     await expect(
-      authenticate(new Request("https://eve.example/eve/v1/session")),
+      authenticate(
+        new Request("https://eve.example/eve/v1/session", {
+          headers: { [PASSPORT_HEADER]: await passportToken() },
+        }),
+      ),
     ).resolves.toBeNull();
   });
 });

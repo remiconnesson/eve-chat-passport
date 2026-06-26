@@ -1,12 +1,10 @@
 import type { Diagnostic } from "nostics";
-import type { AccessMode } from "@/lib/auth/access-mode";
-import { resolveAccessMode } from "@/lib/auth/access-mode";
 import { diagnostics } from "./catalog";
 
 export interface ConfigurationDiagnosticInput {
-  readonly accessMode: AccessMode;
-  readonly accessPassword: string | undefined;
   readonly aiGatewayApiKeyConfigured: boolean;
+  readonly blobStoreConfigured: boolean;
+  readonly blobTokenConfigured: boolean;
   readonly isVercel: boolean;
   readonly nodeVersion?: string;
   readonly oidcTokenConfigured: boolean;
@@ -17,8 +15,11 @@ export function collectConfigurationDiagnostics(
 ): readonly Diagnostic[] {
   const found: Diagnostic[] = [];
 
-  if (input.accessMode === "password" && !input.accessPassword?.trim()) {
-    found.push(diagnostics.EVE_C001());
+  const blobCredentialsConfigured =
+    input.blobTokenConfigured ||
+    (input.blobStoreConfigured && input.oidcTokenConfigured);
+  if (!blobCredentialsConfigured) {
+    found.push(diagnostics.EVE_C005());
   }
 
   if (
@@ -41,9 +42,9 @@ export function collectConfigurationDiagnostics(
 
 export function readConfigurationDiagnostics(): readonly Diagnostic[] {
   return collectConfigurationDiagnostics({
-    accessMode: resolveAccessMode(),
-    accessPassword: process.env.EVE_ACCESS_PASSWORD,
     aiGatewayApiKeyConfigured: Boolean(process.env.AI_GATEWAY_API_KEY),
+    blobStoreConfigured: Boolean(process.env.BLOB_STORE_ID),
+    blobTokenConfigured: Boolean(process.env.BLOB_READ_WRITE_TOKEN),
     isVercel: process.env.VERCEL === "1",
     nodeVersion: readNodeVersion(),
     oidcTokenConfigured: Boolean(process.env.VERCEL_OIDC_TOKEN),
@@ -52,11 +53,15 @@ export function readConfigurationDiagnostics(): readonly Diagnostic[] {
 
 function readNodeVersion(): string | undefined {
   const runtimeProcess: unknown = Reflect.get(globalThis, "process");
-  if (typeof runtimeProcess !== "object" || runtimeProcess === null) return undefined;
+  if (typeof runtimeProcess !== "object" || runtimeProcess === null) {
+    return undefined;
+  }
   if (!("versions" in runtimeProcess)) return undefined;
 
   const versions: unknown = runtimeProcess.versions;
   if (typeof versions !== "object" || versions === null) return undefined;
-  if (!("node" in versions) || typeof versions.node !== "string") return undefined;
+  if (!("node" in versions) || typeof versions.node !== "string") {
+    return undefined;
+  }
   return versions.node;
 }

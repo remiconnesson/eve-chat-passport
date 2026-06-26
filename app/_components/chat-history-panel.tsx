@@ -93,7 +93,7 @@ export function ChatHistoryPanel({
       </nav>
 
       <p className="shrink-0 border-t px-4 py-3 text-xs text-gray-800">
-        Saved in this browser
+        Synced to private Vercel Blob
       </p>
     </div>
   );

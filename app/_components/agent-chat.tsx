@@ -5,7 +5,7 @@ import { useEveAgent } from "eve/react";
 import { log as clientLog } from "evlog/next/client";
 import {
   AlertCircleIcon,
-  LogOutIcon,
+  ShieldCheckIcon,
   TerminalIcon,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -57,6 +57,7 @@ export function AgentChatSession({
   onRemoveChat,
   onSelectChat,
   stopButtonEnabled,
+  visitorName,
 }: {
   readonly chat: ChatHistoryRecord;
   readonly chats: readonly ChatHistorySummary[];
@@ -67,6 +68,7 @@ export function AgentChatSession({
   readonly onRemoveChat: (id: string) => Promise<void>;
   readonly onSelectChat: (id: string) => Promise<void>;
   readonly stopButtonEnabled: boolean;
+  readonly visitorName: string;
 }) {
   const titleRef = useRef(chat.title);
   const persistedCursorRef = useRef(`${chat.events.length}:${chat.session.streamIndex}`);
@@ -265,55 +267,58 @@ export function AgentChatSession({
 
         <section className="flex min-w-0 flex-1 flex-col bg-background">
           <header className="flex h-16 shrink-0 items-center justify-between border-b px-3 sm:px-6">
-          <div className="flex min-w-0 items-center gap-3">
-            <MobileChatHistoryDialog
-              activeId={chat.id}
-              chats={chats}
-              disabled={isSubmitting}
-              historyAvailable={historyAvailable}
-              onCreateChat={onCreateChat}
-              onRemoveChat={onRemoveChat}
-              onSelectChat={onSelectChat}
-            />
-            <div className="grid size-8 shrink-0 place-items-center rounded-md bg-foreground text-background">
-              <TerminalIcon aria-hidden="true" className="size-4" />
-            </div>
-            <div className="flex min-w-0 items-center gap-2 text-sm">
-              <span className="truncate font-semibold tracking-[-0.01em]">eve</span>
-              <span aria-hidden="true" className="text-gray-600">
-                /
-              </span>
-              <span className="hidden truncate text-gray-900 sm:inline">single user</span>
-            </div>
-            <a
-              className="hidden rounded-full border border-gray-400 bg-background px-2 py-0.5 text-[11px] text-gray-900 transition-colors hover:border-gray-500 hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:inline-flex"
-              href={BETA_TERMS_HREF}
-              rel="noreferrer"
-              target="_blank"
-            >
-              Public Preview
-            </a>
-          </div>
-          <div className="flex items-center gap-3 sm:gap-4">
-            <span className="hidden font-mono text-xs text-gray-800 md:inline">
-              {model}
-            </span>
-            <StatusIndicator status={agent.status} />
-            <form action="/api/auth/logout" method="post">
-              <Button
-                className="border-gray-400 px-2.5 text-xs text-gray-900 shadow-none hover:bg-gray-100 hover:text-foreground"
-                size="sm"
-                type="submit"
-                variant="outline"
+            <div className="flex min-w-0 items-center gap-3">
+              <MobileChatHistoryDialog
+                activeId={chat.id}
+                chats={chats}
+                disabled={isSubmitting}
+                historyAvailable={historyAvailable}
+                onCreateChat={onCreateChat}
+                onRemoveChat={onRemoveChat}
+                onSelectChat={onSelectChat}
+              />
+              <div className="grid size-8 shrink-0 place-items-center rounded-md bg-foreground text-background">
+                <TerminalIcon aria-hidden="true" className="size-4" />
+              </div>
+              <div className="flex min-w-0 items-center gap-2 text-sm">
+                <span className="truncate font-semibold tracking-[-0.01em]">
+                  eve
+                </span>
+                <span aria-hidden="true" className="text-gray-600">
+                  /
+                </span>
+                <span className="hidden truncate text-gray-900 sm:inline">
+                  Passport workspace
+                </span>
+              </div>
+              <a
+                className="hidden rounded-full border border-gray-400 bg-background px-2 py-0.5 text-[11px] text-gray-900 transition-colors hover:border-gray-500 hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:inline-flex"
+                href={BETA_TERMS_HREF}
+                rel="noreferrer"
+                target="_blank"
               >
-                <LogOutIcon aria-hidden="true" className="size-3.5" />
-                Sign Out
-              </Button>
-            </form>
-          </div>
+                Public Preview
+              </a>
+            </div>
+            <div className="flex items-center gap-3 sm:gap-4">
+              <span className="hidden font-mono text-xs text-gray-800 md:inline">
+                {model}
+              </span>
+              <StatusIndicator status={agent.status} />
+              <span
+                className="hidden max-w-40 items-center gap-2 text-xs text-gray-900 lg:flex"
+                title={visitorName}
+              >
+                <ShieldCheckIcon
+                  aria-hidden="true"
+                  className="size-3.5 shrink-0"
+                />
+                <span className="truncate">{visitorName}</span>
+              </span>
+            </div>
           </header>
 
-        {agent.error ? (
+          {agent.error ? (
           <div className="shrink-0 border-b border-red-400 bg-red-100 px-4 py-3 sm:px-6">
             <div className="mx-auto flex w-full max-w-3xl items-start gap-3 text-sm">
               <AlertCircleIcon className="mt-0.5 size-4 shrink-0 text-red-900" />
@@ -325,9 +330,9 @@ export function AgentChatSession({
               </div>
             </div>
           </div>
-        ) : null}
+          ) : null}
 
-        {isEmpty ? (
+          {isEmpty ? (
           <div className="flex min-h-0 flex-1 items-center justify-center px-4 py-10 sm:px-6">
             <div className="w-full max-w-2xl">
               <div className="mb-8">
@@ -345,7 +350,7 @@ export function AgentChatSession({
               {composer}
             </div>
           </div>
-        ) : (
+          ) : (
           <Conversation className="min-h-0 flex-1">
             <ConversationContent className="mx-auto w-full max-w-3xl gap-8 px-4 py-8 sm:px-6 sm:py-10">
               {agent.data.messages.map((message, index, messages) => (
@@ -360,9 +365,9 @@ export function AgentChatSession({
             </ConversationContent>
             <ConversationScrollButton />
           </Conversation>
-        )}
+          )}
 
-        {isEmpty ? null : (
+          {isEmpty ? null : (
           <div className="shrink-0 border-t bg-background px-4 py-4 sm:px-6">
             <div className="mx-auto w-full max-w-3xl">
               {composer}
@@ -371,7 +376,7 @@ export function AgentChatSession({
               </p>
             </div>
           </div>
-        )}
+          )}
         </section>
       </div>
     </main>

@@ -26,8 +26,8 @@ const clientLogTransport = {
 } as const;
 
 export const metadata: Metadata = {
-  title: "eve Single-User Agent Starter",
-  description: "A private single-user eve agent starter built with AI Elements.",
+  title: "eve Passport Chat",
+  description: "A private eve chat authenticated with Vercel Passport.",
   robots: {
     follow: false,
     index: false,
@@ -46,7 +46,7 @@ export default function RootLayout({ children }: { readonly children: ReactNode 
         <EvlogProvider
           console={process.env.NODE_ENV !== "production"}
           minLevel="info"
-          service="eve-single-user-agent-starter:browser"
+          service="eve-chat-passport:browser"
           transport={clientLogTransport}
         >
           <TooltipProvider>{children}</TooltipProvider>

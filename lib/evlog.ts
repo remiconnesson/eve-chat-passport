@@ -1,6 +1,6 @@
 import { createEvlog } from "evlog/next";
 
-const SERVICE_NAME = "eve-single-user-agent-starter";
+const SERVICE_NAME = "eve-chat-passport";
 
 export const { log, useLogger, withEvlog } = createEvlog({
   enrich: (context) => {
@@ -23,7 +23,7 @@ export const { log, useLogger, withEvlog } = createEvlog({
   },
   routes: {
     "/api/_evlog/**": { service: `${SERVICE_NAME}:client` },
-    "/api/auth/**": { service: `${SERVICE_NAME}:auth` },
+    "/api/chat-history/**": { service: `${SERVICE_NAME}:history` },
   },
   service: SERVICE_NAME,
   silent: process.env.NODE_ENV === "test",

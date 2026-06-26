@@ -52,7 +52,7 @@ export function MobileChatHistoryDialog({
       >
         <DialogTitle className="sr-only">Chat history</DialogTitle>
         <DialogDescription className="sr-only">
-          Create, select, or delete chats saved in this browser.
+          Create, select, or delete chats synced to your Passport identity.
         </DialogDescription>
         <ChatHistoryPanel
           activeId={activeId}

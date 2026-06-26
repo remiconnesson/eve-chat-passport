@@ -1,11 +1,6 @@
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import { loginPathForAccessAuthorization, readAccessAuthorization } from "./access";
+import { headers } from "next/headers";
+import { readPageIdentity, type VisitorIdentity } from "./passport";
 
-export async function requireAuthenticatedPage(): Promise<void> {
-  const cookieStore = await cookies();
-  const authorization = await readAccessAuthorization(cookieStore.toString());
-  if (authorization.kind !== "authorized") {
-    redirect(loginPathForAccessAuthorization(authorization));
-  }
+export async function currentPageVisitor(): Promise<VisitorIdentity | null> {
+  return readPageIdentity(await headers());
 }

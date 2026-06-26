@@ -1,4 +1,4 @@
-# eve single-user agent starter
+# eve Passport chat
 
 This repository is a beginner-facing adoption starter for eve. Protect the short path from deployment to a successful first conversation. Keep the README focused on that path and put implementation detail here.
 
@@ -27,22 +27,24 @@ Use `pnpm exec eve info --json` to verify agent discovery, tools, channels, and 
 - `agent/tools/` contains authored tools for web search, image generation, and file downloads.
 - `agent/channels/eve.ts` configures the same-origin eve channel, authentication, and upload policy.
 - `app/_components/` contains the chat, message, history, and upload interfaces.
-- `lib/auth/` contains the production password gate.
-- `lib/chat-history/` contains browser history persistence.
+- `lib/auth/` maps Vercel Passport claims into application and eve identities.
+- `lib/chat-history/` contains private Blob persistence and the browser API client.
 - `lib/sandbox-files/` contains the shared browser and agent artifact contract.
 - `docs/diagnostics/` contains stable diagnostic codes and recovery guidance.
 
 ## Deployment and authentication
 
-Production requires `EVE_ACCESS_PASSWORD`. The app validates the password on the server and creates a signed, HTTP-only, same-site cookie. Next.js protects the page, and the eve channel independently protects session routes with the same cookie.
+Production requires Vercel Passport to be enabled for the project. Vercel authenticates the visitor before the request reaches the deployment, strips client-supplied Passport headers, and injects a verified `x-vercel-oidc-passport-token`. Use `external_sub` as the stable visitor identity. Never accept a user ID from a request body or query parameter for authorization.
 
-Local development and Vercel Preview use their environment identity instead of the application password. Preview deployments may be public when Vercel Deployment Protection is disabled. Do not change this behavior without updating the README and the auth tests.
+The page, chat-history routes, client-log ingestion, and eve channel all fail closed when deployed without a Passport identity. Loopback development uses a synthetic local identity. `vercelOidc()` remains in the eve auth walk for the TUI and trusted Vercel-to-Vercel calls.
+
+The project also requires a private Vercel Blob store. On Vercel, the SDK uses `BLOB_STORE_ID` with the platform's short-lived `VERCEL_OIDC_TOKEN`; do not add a long-lived Blob token to production unless OIDC is unavailable.
 
 Vercel supplies a short-lived OIDC token for AI Gateway. The starter must not require a provider API key for its default Vercel deployment path.
 
 ## Agent and interface behavior
 
-- The app is intentionally single-user. Do not turn the password gate into a multi-user account system without an explicit product decision.
+- Keep application data scoped to the authenticated Passport subject. Do not expose one visitor's chats or eve session cursors to another visitor.
 - Keep tool calls, tool results, reasoning, approvals, and sandbox activity in the AI Elements message flow.
 - Keep Markdown rendering in AI Elements' `MessageResponse`, which uses Streamdown.
 - The stop button remains behind `EVE_ENABLE_STOP_BUTTON=1`. Client abort stops the active request or stream but does not cancel the durable eve workflow.
@@ -60,15 +62,15 @@ The agent synchronizes uploads into the sandbox:
 
 For read-only work, use the immutable original. Do not probe a writable copy that has not been created, and do not prefer eve's transient `/workspace/attachments/` path after synchronization.
 
-`generate_image` saves images under `/workspace/generated`. `download_file` returns validated files up to 3 MiB. PNG, JPEG, and WebP artifacts render inline; other media types stay download-only. Browser history removes inline bytes, so a reloaded chat may need the agent to prepare the file again.
+`generate_image` saves images under `/workspace/generated`. `download_file` returns validated files up to 3 MiB. PNG, JPEG, and WebP artifacts render inline; other media types stay download-only. Persisted history removes inline bytes, so a reloaded chat may need the agent to prepare the file again.
 
 The Vercel sandbox stream adapter in `agent/lib/sandbox-files.ts` is temporary. Remove it after the installed eve release includes `vercel/eve#117`, then re-run the production create-and-download flow.
 
 ## Chat history
 
-Chat history uses the `ChatHistoryStore` interface and defaults to `localStorage`. Records include the resumable eve session cursor and completed events needed to restore the conversation. Streaming deltas and inline file bytes are removed before storage.
+Chat history uses the `ChatHistoryStore` interface. The browser implementation calls `/api/chat-history`; the server stores one private JSON blob per chat below a SHA-256 hash of the Passport `external_sub`. Records include the resumable eve session cursor and completed events needed to restore the conversation. Streaming deltas and inline file bytes are removed before storage.
 
-Browser history does not sync across devices. Deleting a browser record does not delete its underlying Vercel Workflow run. Keep this limitation visible in the README.
+History syncs across browsers for the same Passport identity. Deleting a chat deletes its Blob record but does not delete its underlying Vercel Workflow run. Keep this limitation visible in the README.
 
 ## Diagnostics and privacy
 
@@ -78,6 +80,6 @@ Diagnostics are log-only. Stable codes and recovery steps live in `docs/diagnost
 
 ## README contract
 
-Write the README for someone deploying their first agent. Lead with the outcome and the deploy button. Keep the required password, Preview privacy warning, first prompts, first customization, local setup, beta status, and links to eve documentation accurate.
+Write the README for someone deploying their first agent. Lead with the outcome and the deploy button. Keep the Passport and Blob prerequisites, first prompts, first customization, local setup, beta status, and links to eve documentation accurate.
 
 Move architecture, invariants, compatibility workarounds, and maintenance commands here instead of expanding the beginner path. Avoid claims that the starter is production-ready while eve and key dependencies remain in beta.

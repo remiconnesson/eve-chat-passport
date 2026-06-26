@@ -2,8 +2,8 @@
 
 import { log as clientLog } from "evlog/next/client";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { createLocalStorageChatHistoryStore } from "@/lib/chat-history/local-storage";
 import { createChatPersistenceQueue } from "@/lib/chat-history/persistence-queue";
+import { createRemoteChatHistoryStore } from "@/lib/chat-history/remote";
 import {
   type ChatHistoryRecord,
   type ChatHistoryStore,
@@ -14,7 +14,7 @@ import {
 import { AgentChatSession } from "./agent-chat";
 import { ChatHistoryLoading } from "./chat-history-panel";
 
-const localHistoryStore = createLocalStorageChatHistoryStore();
+const remoteHistoryStore = createRemoteChatHistoryStore();
 
 type LoadedHistory = {
   readonly activeChat: ChatHistoryRecord;
@@ -27,13 +27,15 @@ type HistoryState =
   | ({ readonly kind: "ready" } & LoadedHistory);
 
 export function AgentChat({
-  historyStore = localHistoryStore,
+  historyStore = remoteHistoryStore,
   model,
   stopButtonEnabled,
+  visitorName,
 }: {
   readonly historyStore?: ChatHistoryStore;
   readonly model: string;
   readonly stopButtonEnabled: boolean;
+  readonly visitorName: string;
 }) {
   const [history, setHistory] = useState<HistoryState>({ kind: "loading" });
 
@@ -141,7 +143,7 @@ export function AgentChat({
   const removeChat = useCallback(
     async (id: string) => {
       if (history.kind !== "ready") return;
-      if (!window.confirm("Delete this chat from this browser?")) return;
+      if (!window.confirm("Delete this chat from your synced history?")) return;
 
       try {
         await persistenceQueue.flush();
@@ -181,6 +183,7 @@ export function AgentChat({
       onRemoveChat={removeChat}
       onSelectChat={selectChat}
       stopButtonEnabled={stopButtonEnabled}
+      visitorName={visitorName}
     />
   );
 }

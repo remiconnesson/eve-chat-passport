@@ -11,14 +11,17 @@ const forbiddenBrandPattern = new RegExp(`\\b(?:${capitalizedBrand}|${uppercaseB
 
 describe("brand capitalization", () => {
   it("keeps the eve product name lowercase", async () => {
-    const { stdout } = await execFileAsync("git", ["ls-files", "-z"], {
-      encoding: "utf8",
-    });
+    const { stdout } = await execFileAsync(
+      "git",
+      ["ls-files", "-z", "--cached", "--others", "--exclude-standard"],
+      { encoding: "utf8" },
+    );
     const files = stdout.split("\0").filter((file) => textFilePattern.test(file));
     const violations: string[] = [];
 
     for (const file of files) {
-      const content = await readFile(file, "utf8");
+      const content = await readExistingFile(file);
+      if (content === null) continue;
       const match = forbiddenBrandPattern.exec(content);
       if (!match || match.index === undefined) continue;
 
@@ -29,3 +32,18 @@ describe("brand capitalization", () => {
     expect(violations).toEqual([]);
   });
 });
+
+async function readExistingFile(path: string): Promise<string | null> {
+  try {
+    return await readFile(path, "utf8");
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      "code" in error &&
+      error.code === "ENOENT"
+    ) {
+      return null;
+    }
+    throw error;
+  }
+}

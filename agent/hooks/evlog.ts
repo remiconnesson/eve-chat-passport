@@ -115,7 +115,7 @@ function emitTurn({
       outputCharacters: observation.outputCharacters,
     },
     outcome,
-    service: "eve-single-user-agent-starter:agent",
+    service: "eve-chat-passport:agent",
     session: { id: context.session.id },
     tools: {
       errors: observation.actionErrors,

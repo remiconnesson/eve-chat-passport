@@ -1,30 +1,24 @@
 import type { AuthFn } from "eve/channels/auth";
-import { readAccessAuthorization, resolveAccessMode } from "./access";
+import { readVercelPassportIdentity } from "./passport";
 
-type OwnerPrincipal = Exclude<
+type VisitorPrincipal = Exclude<
   Awaited<ReturnType<AuthFn<Request>>>,
   null | undefined
 >;
 
-export function singleUserPasswordAuth(): AuthFn<Request> {
-  return async (request) => {
-    const accessMode = resolveAccessMode();
-    if (accessMode !== "password") {
-      return ownerPrincipal(accessMode);
-    }
+export function passportAuth(): AuthFn<Request> {
+  return async (request): Promise<VisitorPrincipal | null> => {
+    const identity = readVercelPassportIdentity(request.headers);
+    if (!identity) return null;
 
-    const authorization = await readAccessAuthorization(request.headers.get("cookie"));
-    return authorization.kind === "authorized" ? ownerPrincipal("password") : null;
-  };
-}
-
-function ownerPrincipal(
-  authenticator: "development" | "password" | "preview",
-): OwnerPrincipal {
-  return {
-    attributes: {},
-    authenticator,
-    principalId: "owner",
-    principalType: "user",
+    return {
+      attributes: {
+        ...(identity.email ? { email: identity.email } : {}),
+        ...(identity.name ? { name: identity.name } : {}),
+      },
+      authenticator: identity.authenticator,
+      principalId: identity.id,
+      principalType: "user",
+    };
   };
 }

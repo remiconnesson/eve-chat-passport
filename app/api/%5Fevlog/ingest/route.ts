@@ -1,25 +1,14 @@
 import type { IngestPayload } from "evlog";
 import type { NextRequest } from "next/server";
-import { readAccessAuthorization } from "@/lib/auth/access";
+import { readRequestIdentity } from "@/lib/auth/passport";
 import {
   getDiagnosticLogFields,
-  toDiagnosticLogFields,
 } from "@/lib/diagnostics/catalog";
 import { useLogger, withEvlog } from "@/lib/evlog";
 
 export const POST = withEvlog(async (request: NextRequest) => {
   const requestLog = useLogger();
-  const authorization = await readAccessAuthorization(request.headers.get("cookie"));
-  if (authorization.kind === "misconfigured") {
-    requestLog.set({
-      clientLog: {
-        diagnostic: toDiagnosticLogFields(authorization.diagnostic),
-        outcome: "misconfigured",
-      },
-    });
-    return Response.json({ error: "App is not configured" }, { status: 503 });
-  }
-  if (authorization.kind === "unauthorized") {
+  if (!readRequestIdentity(request)) {
     requestLog.set({ clientLog: { outcome: "denied" } });
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }

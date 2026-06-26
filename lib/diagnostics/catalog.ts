@@ -2,15 +2,11 @@ import type { Diagnostic } from "nostics";
 import { defineDiagnostics } from "nostics";
 
 const DIAGNOSTICS_BASE_URL =
-  "https://github.com/remiconnesson/eve-single-user-agent-starter/blob/main/docs/diagnostics";
+  "https://github.com/remiconnesson/eve-chat-passport/blob/main/docs/diagnostics";
 
 export const diagnostics = defineDiagnostics({
   docsBase: (code) => `${DIAGNOSTICS_BASE_URL}/${code.toLowerCase()}.md`,
   codes: {
-    EVE_C001: {
-      why: "EVE_ACCESS_PASSWORD is required in production.",
-      fix: "Add a private EVE_ACCESS_PASSWORD to the Production environment in Vercel, then redeploy.",
-    },
     EVE_C003: {
       why: "Local AI Gateway credentials are missing.",
       fix: "Run `vercel link`, then `vercel env pull .env.local`, and restart the development server.",
@@ -18,6 +14,10 @@ export const diagnostics = defineDiagnostics({
     EVE_C004: {
       why: "This project requires Node.js 24 or newer.",
       fix: "Install Node.js 24, reinstall dependencies with pnpm, and restart the app.",
+    },
+    EVE_C005: {
+      why: "Vercel Blob credentials are missing.",
+      fix: "Connect a private Blob store to the Vercel project, then pull the project environment and redeploy.",
     },
     EVE_R001: {
       why: "The agent could not complete the request.",
